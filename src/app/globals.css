@@ -1,51 +1,92 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 150 33% 97%;          /* #F5FAF8 */
-    --foreground: 200 55% 12%;          /* #0B2535 */
-    --card: 0 0% 100%;
-    --card-foreground: 200 55% 12%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 200 55% 12%;
-    --primary: 160 84% 30%;             /* #059669 */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 150 20% 94%;
-    --secondary-foreground: 200 55% 12%;
-    --muted: 150 15% 94%;
-    --muted-foreground: 200 15% 40%;
-    --accent: 150 25% 92%;
-    --accent-foreground: 200 55% 12%;
-    --destructive: 0 84% 60%;
+    --background: oklch(1 0 0);          /* #F5FAF8 */
+    --foreground: oklch(0.145 0 0);          /* #0B2535 */
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);             /* #059669 */
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: 0 0% 100%;
-    --border: 150 20% 90%;              /* #E5EEE9 */
-    --input: 150 20% 90%;
-    --ring: 160 84% 30%;
-    --radius: 0.75rem;
+    --border: oklch(0.922 0 0);              /* #E5EEE9 */
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --radius: 0.625rem;
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
   }
 
   .dark {
-    --background: 200 55% 12%;          /* #0B2535 */
-    --foreground: 150 20% 95%;
-    --card: 200 45% 16%;
-    --card-foreground: 150 20% 95%;
-    --popover: 200 45% 16%;
-    --popover-foreground: 150 20% 95%;
-    --primary: 160 84% 39%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 200 40% 20%;
-    --secondary-foreground: 150 20% 95%;
-    --muted: 200 35% 22%;
-    --muted-foreground: 150 15% 70%;
-    --accent: 200 40% 22%;
-    --accent-foreground: 150 20% 95%;
-    --destructive: 0 62% 50%;
+    --background: oklch(0.145 0 0);          /* #0B2535 */
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
     --destructive-foreground: 0 0% 100%;
-    --border: 200 30% 25%;
-    --input: 200 30% 25%;
-    --ring: 160 84% 39%;
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+  }
+  .theme {
+    --font-heading: var(--font-sans);
+    --font-sans: var(--font-sans);
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }
 
