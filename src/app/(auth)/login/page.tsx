@@ -55,8 +55,16 @@ export default function LoginPage() {
 
       // Redirect based on role will be handled by middleware later
       // For now go to dashboard
-      router.push("/dashboard");
-      router.refresh();
+      // Get the session to know the role
+const sessionRes = await fetch("/api/auth/session");
+const session = await sessionRes.json();
+
+if (session?.user?.role === "ADMIN" || session?.user?.role === "LIBRARIAN") {
+  router.push("/admin/dashboard");
+} else {
+  router.push("/dashboard");
+}
+router.refresh();
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
     } finally {

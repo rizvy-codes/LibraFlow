@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { signOut } from "next-auth/react";
 import { Search, Bell, Menu, Moon, Sun, LogOut, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -87,16 +88,17 @@ export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" /> Profile
-            </DropdownMenuItem>
+            <DropdownMenuItem
+  className="text-red-600 focus:text-red-600 cursor-pointer"
+  onClick={() => signOut({ callbackUrl: "/login" })}
+>
+  <LogOut className="mr-2 h-4 w-4" />
+  Sign out
+</DropdownMenuItem>
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" /> Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600 focus:text-red-600">
-              <LogOut className="mr-2 h-4 w-4" /> Sign out
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

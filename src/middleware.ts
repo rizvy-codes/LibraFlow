@@ -4,15 +4,18 @@ import { NextResponse } from "next/server";
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const session = req.auth;
-  const role = session?.user?.role;
+  const role = session?.user?.role as string | undefined;
 
-  // Public routes that don't need auth
-  const publicRoutes = ["/", "/login", "/register", "/forgot-password", "/reset-password"];
-  const isPublic = publicRoutes.some(
-    (route) => pathname === route || pathname.startsWith("/api/auth")
-  );
+  // Public routes
+  const isPublic =
+    pathname === "/" ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/reset-password") ||
+    pathname.startsWith("/api/auth");
 
-  // Auth pages (login/register etc.)
+  // Auth pages
   const isAuthPage =
     pathname.startsWith("/login") ||
     pathname.startsWith("/register") ||
@@ -36,22 +39,27 @@ export default auth((req) => {
 
   // Role-based protection
   if (session) {
-    // Student trying to access admin area
+    // Student cannot access any /admin route
     if (pathname.startsWith("/admin") && role === "STUDENT") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
-    // Admin/Librarian trying to access student dashboard area
-    if (
-      (pathname.startsWith("/dashboard") ||
-        pathname.startsWith("/browse") ||
-        pathname.startsWith("/borrowed") ||
-        pathname.startsWith("/reservations") ||
-        pathname.startsWith("/history") ||
-        pathname.startsWith("/fines") ||
-        pathname.startsWith("/profile")) &&
-      (role === "ADMIN" || role === "LIBRARIAN")
-    ) {
+    // Admin / Librarian should not stay on student-only routes
+    const studentOnlyRoutes = [
+      "/dashboard",
+      "/browse",
+      "/borrowed",
+      "/reservations",
+      "/history",
+      "/fines",
+      "/profile",
+    ];
+
+    const isStudentRoute = studentOnlyRoutes.some(
+      (route) => pathname === route || pathname.startsWith(route + "/")
+    );
+
+    if (isStudentRoute && (role === "ADMIN" || role === "LIBRARIAN")) {
       return NextResponse.redirect(new URL("/admin/dashboard", req.url));
     }
   }
@@ -61,9 +69,6 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except static files and images
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
