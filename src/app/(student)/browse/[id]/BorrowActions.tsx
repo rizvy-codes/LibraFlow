@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2, BookMarked, CalendarCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -11,17 +12,30 @@ interface Props {
 }
 
 export function BorrowActions({ bookId, availableCopies }: Props) {
+  const router = useRouter();
   const [isBorrowing, setIsBorrowing] = useState(false);
   const [isReserving, setIsReserving] = useState(false);
 
   const handleBorrow = async () => {
     setIsBorrowing(true);
     try {
-      // Will be connected to real API in Task 7
-      await new Promise((r) => setTimeout(r, 800));
-      toast.success("Borrow request submitted! (API coming in next task)");
+      const res = await fetch("/api/borrowings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookId }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Failed to borrow book");
+        return;
+      }
+
+      toast.success("Book borrowed successfully!");
+      router.refresh();
     } catch {
-      toast.error("Failed to borrow book");
+      toast.error("Something went wrong");
     } finally {
       setIsBorrowing(false);
     }
@@ -30,10 +44,8 @@ export function BorrowActions({ bookId, availableCopies }: Props) {
   const handleReserve = async () => {
     setIsReserving(true);
     try {
-      await new Promise((r) => setTimeout(r, 800));
-      toast.success("Reservation placed! (API coming in next task)");
-    } catch {
-      toast.error("Failed to reserve book");
+      // Reserve API will be added next
+      toast.info("Reservation feature coming in next step");
     } finally {
       setIsReserving(false);
     }
