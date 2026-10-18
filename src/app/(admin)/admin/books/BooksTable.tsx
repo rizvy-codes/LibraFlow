@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   useReactTable,
   getCoreRowModel,
@@ -66,14 +67,21 @@ const columns: ColumnDef<Book>[] = [
           <span>
             {available}/{total}
           </span>
-          <StatusBadge
-            status={available > 0 ? "success" : "danger"}
-          >
+          <StatusBadge status={available > 0 ? "success" : "danger"}>
             {available > 0 ? "Available" : "Out of stock"}
           </StatusBadge>
         </div>
       );
     },
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => (
+      <Button size="sm" variant="outline" asChild>
+        <Link href={`/admin/books/${row.original.id}/edit`}>Edit</Link>
+      </Button>
+    ),
   },
 ];
 

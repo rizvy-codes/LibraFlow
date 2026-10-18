@@ -1,7 +1,6 @@
-import { cn } from "@/lib/utils";
+import Link from "next/link";
 import { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 interface EmptyStateProps {
   icon: LucideIcon;
@@ -9,8 +8,6 @@ interface EmptyStateProps {
   description?: string;
   actionLabel?: string;
   actionHref?: string;
-  onAction?: () => void;
-  className?: string;
 }
 
 export function EmptyState({
@@ -19,36 +16,23 @@ export function EmptyState({
   description,
   actionLabel,
   actionHref,
-  onAction,
-  className,
 }: EmptyStateProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card/50 px-6 py-16 text-center",
-        className
-      )}
-    >
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center">
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
         <Icon className="h-7 w-7 text-muted-foreground" />
       </div>
-      <h3 className="mt-4 text-lg font-semibold text-foreground">{title}</h3>
+      <h3 className="mt-4 text-lg font-semibold">{title}</h3>
       {description && (
         <p className="mt-1 max-w-sm text-sm text-muted-foreground">
           {description}
         </p>
       )}
-      {(actionLabel && actionHref) || onAction ? (
-        <div className="mt-6">
-          {actionHref ? (
-            <Button asChild>
-              <Link href={actionHref}>{actionLabel}</Link>
-            </Button>
-          ) : (
-            <Button onClick={onAction}>{actionLabel}</Button>
-          )}
-        </div>
-      ) : null}
+      {actionLabel && actionHref && (
+        <Button className="mt-4" asChild>
+          <Link href={actionHref}>{actionLabel}</Link>
+        </Button>
+      )}
     </div>
   );
 }
