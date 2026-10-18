@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signOut } from "next-auth/react";
-import { Search, Bell, Menu, Moon, Sun, LogOut, User, Settings } from "lucide-react";
+import { Search, Menu, Moon, Sun, LogOut, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,8 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 
 interface AdminTopbarProps {
   onMenuClick: () => void;
@@ -30,6 +30,7 @@ export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-card/80 px-4 backdrop-blur-md lg:px-6">
+      {/* Mobile menu button */}
       <Button
         variant="ghost"
         size="icon"
@@ -39,16 +40,22 @@ export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
         <Menu className="h-5 w-5" />
       </Button>
 
+      {/* CPI Branding */}
       <div className="hidden items-center gap-2 lg:flex">
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-navy text-xs font-bold text-white">
           CPI
         </div>
         <div className="leading-tight">
-          <p className="text-sm font-semibold">Chattogram Polytechnic Institute</p>
-          <p className="text-[11px] text-muted-foreground">Library Management System</p>
+          <p className="text-sm font-semibold">
+            Chattogram Polytechnic Institute
+          </p>
+          <p className="text-[11px] text-muted-foreground">
+            Library Management System
+          </p>
         </div>
       </div>
 
+      {/* Search */}
       <div className="relative ml-auto flex-1 max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -60,23 +67,24 @@ export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
         </kbd>
       </div>
 
+      {/* Right actions */}
       <div className="flex items-center gap-1">
+        {/* Dark mode */}
         <Button variant="ghost" size="icon" onClick={toggleDark}>
           {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
 
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <Badge className="absolute -right-1 -top-1 h-5 w-5 justify-center rounded-full p-0 text-[10px]">
-            3
-          </Badge>
-        </Button>
+        {/* Notifications */}
+        <NotificationBell />
 
+        {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="relative flex h-10 w-10 items-center justify-center rounded-full outline-none ring-offset-background transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring">
               <Avatar className="h-9 w-9">
-                <AvatarFallback className="bg-primary text-white">TH</AvatarFallback>
+                <AvatarFallback className="bg-primary text-white">
+                  TH
+                </AvatarFallback>
               </Avatar>
             </button>
           </DropdownMenuTrigger>
@@ -88,17 +96,22 @@ export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-  className="text-red-600 focus:text-red-600 cursor-pointer"
-  onClick={() => signOut({ callbackUrl: "/login" })}
->
-  <LogOut className="mr-2 h-4 w-4" />
-  Sign out
-</DropdownMenuItem>
             <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" /> Settings
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Settings className="mr-2 h-4 w-4" />
+              Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="cursor-pointer text-red-600 focus:text-red-600"
+              onClick={() => signOut({ callbackUrl: "/login" })}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
