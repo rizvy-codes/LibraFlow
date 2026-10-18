@@ -42,14 +42,28 @@ export function BorrowActions({ bookId, availableCopies }: Props) {
   };
 
   const handleReserve = async () => {
-    setIsReserving(true);
-    try {
-      // Reserve API will be added next
-      toast.info("Reservation feature coming in next step");
-    } finally {
-      setIsReserving(false);
+  setIsReserving(true);
+  try {
+    const res = await fetch("/api/reservations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookId }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      toast.error(data.error || "Failed to reserve book");
+      return;
     }
-  };
+
+    toast.success("Book reserved successfully!");
+    router.refresh();
+  } catch {
+    toast.error("Something went wrong");
+  } finally {
+    setIsReserving(false);
+  }
+};
 
   return (
     <div className="flex flex-wrap gap-3 pt-2">

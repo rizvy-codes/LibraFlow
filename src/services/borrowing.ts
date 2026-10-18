@@ -155,3 +155,99 @@ export async function returnBook(borrowingId: string) {
     return { success: true };
   });
 }
+export async function renewBook(borrowingId: string, userId: string) {
+  return prisma.$transaction(async (tx) => {
+    const maxRenew = parseInt(await getSetting("maxRenew", "2"));
+    const loanDays = parseInt(await getSetting("loanDays", "14"));
+
+    const borrowing = await tx.borrowing.findUnique({
+      where: { id: borrowingId },
+      include: { book: true },
+    });
+
+    if (!borrowing) throw new Error("Borrowing record not found.");
+    if (borrowing.userId !== userId) throw new Error("Unauthorized.");
+    if (borrowing.status !== "ACTIVE") throw new Error("Only active loans can be renewed.");
+    if (borrowing.renewCount >= maxRenew) {
+      throw new Error(`Maximum ${maxRenew} renewals allowed.`);
+    }
+
+    // Check if someone else has reserved this book
+    const hasReservation = await tx.reservation.findFirst({
+      where: {
+        bookId: borrowing.bookId,
+        status: { in: ["PENDING", "READY"] },
+        userId: { not: userId },
+      },
+    });
+    if (hasReservation) {
+      throw new Error("Cannot renew – this book is reserved by another user.");
+    }
+
+    const newDueDate = new Date(borrowing.dueDate);
+    newDueDate.setDate(newDueDate.getDate() + loanDays);
+
+    const updated = await tx.borrowing.update({
+      where: { id: borrowingId },
+      data: {
+        dueDate: newDueDate,
+        renewCount: { increment: 1 },
+      },
+    });
+
+    await tx.activityLog.create({
+      data: {
+        userId,
+        action: "BOOK_RENEWED",
+        entity: "Borrowing",
+        entityId: borrowingId,
+        details: `Renewed: ${borrowing.book.title}`,
+      },
+    });
+
+    return updated;
+  });
+}
+
+export async function reserveBook(userId: string, bookId: string) {
+  return prisma.$transaction(async (tx) => {
+    const book = await tx.book.findUnique({ where: { id: bookId } });
+    if (!book) throw new Error("Book not found.");
+
+    // Already has active loan of this book?
+    const activeLoan = await tx.borrowing.findFirst({
+      where: { userId, bookId, status: "ACTIVE" },
+    });
+    if (activeLoan) throw new Error("You already have this book on loan.");
+
+    // Already has a pending/ready reservation?
+    const existing = await tx.reservation.findFirst({
+      where: {
+        userId,
+        bookId,
+        status: { in: ["PENDING", "READY"] },
+      },
+    });
+    if (existing) throw new Error("You already have a reservation for this book.");
+
+    const reservation = await tx.reservation.create({
+      data: {
+        userId,
+        bookId,
+        status: "PENDING",
+      },
+    });
+
+    await tx.activityLog.create({
+      data: {
+        userId,
+        action: "BOOK_RESERVED",
+        entity: "Reservation",
+        entityId: reservation.id,
+        details: `Reserved: ${book.title}`,
+      },
+    });
+
+    return reservation;
+  });
+}
