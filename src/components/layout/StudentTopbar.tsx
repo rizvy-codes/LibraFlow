@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import { Search, Menu, Moon, Sun, LogOut, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,15 @@ interface StudentTopbarProps {
 
 export function StudentTopbar({ onMenuClick }: StudentTopbarProps) {
   const [isDark, setIsDark] = useState(false);
+  const { data: session } = useSession();
+
+  const userName = session?.user?.name || "Student";
+  const initials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   const toggleDark = () => {
     setIsDark(!isDark);
@@ -30,7 +40,6 @@ export function StudentTopbar({ onMenuClick }: StudentTopbarProps) {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-card/80 px-4 backdrop-blur-md lg:px-6">
-      {/* Mobile menu button */}
       <Button
         variant="ghost"
         size="icon"
@@ -40,7 +49,6 @@ export function StudentTopbar({ onMenuClick }: StudentTopbarProps) {
         <Menu className="h-5 w-5" />
       </Button>
 
-      {/* CPI Branding */}
       <div className="hidden items-center gap-2 lg:flex">
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-navy text-xs font-bold text-white">
           CPI
@@ -55,7 +63,6 @@ export function StudentTopbar({ onMenuClick }: StudentTopbarProps) {
         </div>
       </div>
 
-      {/* Search */}
       <div className="relative ml-auto flex-1 max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -67,23 +74,19 @@ export function StudentTopbar({ onMenuClick }: StudentTopbarProps) {
         </kbd>
       </div>
 
-      {/* Right actions */}
       <div className="flex items-center gap-1">
-        {/* Dark mode */}
         <Button variant="ghost" size="icon" onClick={toggleDark}>
           {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
 
-        {/* Notifications */}
         <NotificationBell />
 
-        {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="relative flex h-10 w-10 items-center justify-center rounded-full outline-none ring-offset-background transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring">
               <Avatar className="h-9 w-9">
                 <AvatarFallback className="bg-primary text-white">
-                  RI
+                  {initials}
                 </AvatarFallback>
               </Avatar>
             </button>
@@ -91,16 +94,18 @@ export function StudentTopbar({ onMenuClick }: StudentTopbarProps) {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
               <div className="flex flex-col">
-                <span className="font-medium">Md. Rahim Islam</span>
+                <span className="font-medium">{userName}</span>
                 <span className="text-xs text-muted-foreground">
-                  CSE 5th Semester
+                  {session?.user?.email}
                 </span>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              Profile
+            <DropdownMenuItem asChild>
+              <Link href="/profile" className="flex cursor-pointer items-center">
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />

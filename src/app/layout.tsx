@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
     template: "%s | LibraFlow",
   },
   description:
-    "Official library management system of Chattogram Polytechnic Institute. Access thousands of books, manage borrowings, and explore a world of learning.",
+    "Official library management system of Chattogram Polytechnic Institute.",
 };
 
 export default function RootLayout({
@@ -27,8 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.variable, "min-h-screen font-sans antialiased")}>
-        {children}
-        <Toaster richColors position="top-right" />
+        <SessionProvider>
+          {children}
+          <Toaster richColors position="top-right" />
+        </SessionProvider>
       </body>
     </html>
   );

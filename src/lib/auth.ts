@@ -31,7 +31,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const { emailOrStudentId, password } = parsed.data;
 
-        // Find by email OR studentId
         const user = await prisma.user.findFirst({
           where: {
             OR: [
@@ -56,7 +55,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         };
       },
     }),
-    // Google OAuth (optional – add keys later)
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
@@ -64,12 +62,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.role = (user as any).role;
         token.studentId = (user as any).studentId;
         token.id = user.id;
+        token.name = user.name;
       }
+
+      // When client calls update({ name: "..." })
+      if (trigger === "update" && session?.name) {
+        token.name = session.name;
+      }
+
       return token;
     },
     async session({ session, token }) {
@@ -77,6 +82,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         (session.user as any).role = token.role;
         (session.user as any).studentId = token.studentId;
         (session.user as any).id = token.id;
+        session.user.name = (token.name as string) || session.user.name;
       }
       return session;
     },
